@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+mongoose.set('runValidators', true);
+
 const userSchema = new mongoose.Schema(
   {
     name: {

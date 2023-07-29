@@ -8,7 +8,7 @@ const app = express();
 app.use(express.json());
 app.use((req, res, next) => {
   req.user = {
-    userId: '64c156d8270b392e222cb8b0',
+    _id: '64c156d8270b392e222cb8b0',
   };
 
   next();
