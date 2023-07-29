@@ -1,106 +1,84 @@
 const User = require('../models/user');
 
+const { ERROR_CODE_400, ERROR_CODE_404, ERROR_CODE_500 } = require('../utils/constants');
+
 module.exports.getUsersAll = (req, res) => {
   User.find({})
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    // eslint-disable-next-line no-unused-vars
+    .catch((err) => res.status(ERROR_CODE_500).send('Произошла ошибка.'));
 };
 
 module.exports.getUserId = (req, res) => {
-  const id = req.params.userId;
+  const id = req.params._id;
   return User.findById(id)
     .then((user) => {
       if (!user) {
-        return res.status(404).send({
+        return res.status(ERROR_CODE_404).send({
           message: `Пользователь по указанному id ${id} не найден.`,
         });
       }
       return res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'CastError' && err.path === '_id') {
-        return res.status(400).send({
-          message: `Пользователь по указанному id ${id} не найден.`,
-        });
+      if (err.name === 'ValidationError') {
+        return res.status(ERROR_CODE_400).send('Переданы некорректные данные пользователя.');
       }
-      return res.status(500).send({ message: err.message });
+      return res.status(ERROR_CODE_500).send('Произошла ошибка.');
     });
 };
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
-  if (
-    !name ||
-    !about ||
-    !avatar ||
-    name.length < 2 ||
-    name.length > 30 ||
-    about.length < 2 ||
-    about.length > 30
-  ) {
-    return res.status(400).send({
-      message: 'Переданы некорректные данные при создании пользователя.',
-    });
-  }
-
   return User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(ERROR_CODE_400).send('Переданы некорректные данные пользователя.');
+      }
+      return res.status(ERROR_CODE_500).send('Произошла ошибка.');
+    });
 };
 
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
-  const id = req.user.userId;
+  const id = req.user._id;
 
-  if (!name || !about) {
-    return res.status(400).send({
-      message: 'Переданы некорректные данные при обновлении профиля.',
-    });
-  }
-  return User.findByIdAndUpdate(id, { name, about }, { new: true })
+  return User.findByIdAndUpdate(id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        return res.status(404).send({
+        return res.status(ERROR_CODE_404).send({
           message: `Пользователь по указанному id ${id} не найден.`,
         });
       }
       return res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'CastError' && err.path === '_id') {
-        return res.status(404).send({
-          message: `Пользователь по указанному id ${id} не найден.`,
-        });
+      if (err.name === 'ValidationError') {
+        return res.status(ERROR_CODE_400).send('Переданы некорректные данные при обновлении профиля.');
       }
-      return res.status(500).send({ message: err.message });
+      return res.status(ERROR_CODE_500).send('Произошла ошибка.');
     });
 };
 
 module.exports.updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
-  const id = req.user.userId;
+  const id = req.user._id;
 
-  if (!avatar) {
-    return res.status(400).send({
-      message: 'Переданы некорректные данные при обновлении профиля.',
-    });
-  }
-  return User.findByIdAndUpdate(id, { avatar }, { new: true })
+  return User.findByIdAndUpdate(id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        return res.status(404).send({
+        return res.status(ERROR_CODE_404).send({
           message: `Пользователь по указанному id ${id} не найден.`,
         });
       }
       return res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'CastError' && err.path === '_id') {
-        return res.status(404).send({
-          message: `Пользователь по указанному id ${id} не найден.`,
-        });
+      if (err.name === 'ValidationError') {
+        return res.status(ERROR_CODE_400).send('Переданы некорректные данные при обновлении аватара профиля.');
       }
-      return res.status(500).send({ message: err.message });
+      return res.status(ERROR_CODE_500).send('Произошла ошибка.');
     });
 };
