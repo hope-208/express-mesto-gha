@@ -5,7 +5,7 @@ module.exports.getCardsAll = (req, res) => {
   Card.find({})
     .then((card) => res.send({ data: card }))
     // eslint-disable-next-line no-unused-vars
-    .catch((err) => res.status(ERROR_CODE_500).send('Произошла ошибка.'));
+    .catch((err) => res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' }));
 };
 
 module.exports.createCard = (req, res) => {
@@ -14,9 +14,9 @@ module.exports.createCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(ERROR_CODE_400).send('Переданы некорректные данные при создании карточки.');
+        return res.status(ERROR_CODE_400).send({ message: 'Переданы некорректные данные при создании карточки.' });
       }
-      return res.status(ERROR_CODE_500).send('Произошла ошибка.');
+      return res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' });
     });
 };
 
@@ -38,7 +38,7 @@ module.exports.deleteCard = (req, res) => {
           message: `Передан некорректный id ${id} карточки.`,
         });
       }
-      return res.status(ERROR_CODE_500).send('Произошла ошибка.');
+      return res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' });
     });
 };
 
@@ -60,9 +60,9 @@ module.exports.likeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(ERROR_CODE_400).send('Переданы некорректные данные для постановки лайка.');
+        return res.status(ERROR_CODE_400).send({ message: 'Переданы некорректные данные для постановки лайка.' });
       }
-      return res.status(ERROR_CODE_500).send('Произошла ошибка.');
+      return res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' });
     });
 };
 
@@ -90,8 +90,8 @@ module.exports.dislikeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(ERROR_CODE_400).send('Переданы некорректные данные для снятия лайка.');
+        return res.status(ERROR_CODE_400).send({ message: 'Переданы некорректные данные для снятия лайка.' });
       }
-      return res.status(ERROR_CODE_500).send('Произошла ошибка.');
+      return res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' });
     });
 };

@@ -6,7 +6,7 @@ module.exports.getUsersAll = (req, res) => {
   User.find({})
     .then((user) => res.send({ data: user }))
     // eslint-disable-next-line no-unused-vars
-    .catch((err) => res.status(ERROR_CODE_500).send('Произошла ошибка.'));
+    .catch((err) => res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' }));
 };
 
 module.exports.getUserId = (req, res) => {
@@ -24,7 +24,7 @@ module.exports.getUserId = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(ERROR_CODE_400).send('Переданы некорректные данные пользователя.');
       }
-      return res.status(ERROR_CODE_500).send('Произошла ошибка.');
+      return res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' });
     });
 };
 
@@ -37,7 +37,7 @@ module.exports.createUser = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(ERROR_CODE_400).send('Переданы некорректные данные пользователя.');
       }
-      return res.status(ERROR_CODE_500).send('Произошла ошибка.');
+      return res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' });
     });
 };
 
@@ -58,7 +58,7 @@ module.exports.updateUser = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(ERROR_CODE_400).send('Переданы некорректные данные при обновлении профиля.');
       }
-      return res.status(ERROR_CODE_500).send('Произошла ошибка.');
+      return res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' });
     });
 };
 
@@ -77,8 +77,8 @@ module.exports.updateUserAvatar = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(ERROR_CODE_400).send('Переданы некорректные данные при обновлении аватара профиля.');
+        return res.status(ERROR_CODE_400).send({ message: 'Переданы некорректные данные при обновлении аватара профиля.' });
       }
-      return res.status(ERROR_CODE_500).send('Произошла ошибка.');
+      return res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' });
     });
 };
