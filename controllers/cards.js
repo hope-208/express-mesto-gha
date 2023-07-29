@@ -8,7 +8,14 @@ module.exports.getCardsAll = (req, res) => {
 
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
-  if (!name || !link) {
+  if (
+    !name ||
+    !link ||
+    name.length < 2 ||
+    name.length > 30 ||
+    link.length < 2 ||
+    link.length > 30
+  ) {
     return res.status(400).send({
       message: 'Переданы некорректные данные при создании карточки.',
     });
@@ -57,7 +64,7 @@ module.exports.likeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError' && err.path === '_id') {
-        return res.status(404).send({
+        return res.status(400).send({
           message: `Передан несуществующий id ${id} карточки.`,
         });
       }

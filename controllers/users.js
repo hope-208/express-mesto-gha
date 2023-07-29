@@ -19,7 +19,7 @@ module.exports.getUserId = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError' && err.path === '_id') {
-        return res.status(404).send({
+        return res.status(400).send({
           message: `Пользователь по указанному id ${id} не найден.`,
         });
       }
@@ -30,11 +30,20 @@ module.exports.getUserId = (req, res) => {
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
-  if (!name || !about || !avatar) {
+  if (
+    !name ||
+    !about ||
+    !avatar ||
+    name.length < 2 ||
+    name.length > 30 ||
+    about.length < 2 ||
+    about.length > 30
+  ) {
     return res.status(400).send({
       message: 'Переданы некорректные данные при создании пользователя.',
     });
   }
+
   return User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
