@@ -21,8 +21,8 @@ module.exports.getUserId = (req, res) => {
       return res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(ERROR_CODE_400).send('Переданы некорректные данные пользователя.');
+      if (err.name === 'ValidationError' || (err.name === 'CastError' && err.path === '_id')) {
+        return res.status(ERROR_CODE_400).send({ message: 'Переданы некорректные данные пользователя.' });
       }
       return res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' });
     });
@@ -35,7 +35,7 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(ERROR_CODE_400).send('Переданы некорректные данные пользователя.');
+        return res.status(ERROR_CODE_400).send({ message: 'Переданы некорректные данные пользователя.' });
       }
       return res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' });
     });
@@ -56,7 +56,7 @@ module.exports.updateUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(ERROR_CODE_400).send('Переданы некорректные данные при обновлении профиля.');
+        return res.status(ERROR_CODE_400).send({ message: 'Переданы некорректные данные пользователя.' });
       }
       return res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' });
     });

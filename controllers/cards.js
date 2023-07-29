@@ -33,7 +33,7 @@ module.exports.deleteCard = (req, res) => {
       return res.send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError' || (err.name === 'CastError' && err.path === '_id')) {
         return res.status(ERROR_CODE_404).send({
           message: `Передан некорректный id ${id} карточки.`,
         });
@@ -59,7 +59,7 @@ module.exports.likeCard = (req, res) => {
       return res.send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError' || (err.name === 'CastError' && err.path === '_id')) {
         return res.status(ERROR_CODE_400).send({ message: 'Переданы некорректные данные для постановки лайка.' });
       }
       return res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' });
@@ -89,7 +89,7 @@ module.exports.dislikeCard = (req, res) => {
       return res.send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError' || (err.name === 'CastError' && err.path === '_id')) {
         return res.status(ERROR_CODE_400).send({ message: 'Переданы некорректные данные для снятия лайка.' });
       }
       return res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' });
