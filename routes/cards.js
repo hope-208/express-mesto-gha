@@ -29,8 +29,45 @@ router.post(
 
   createCard
 );
-router.delete('/cards/:cardId', auth, deleteCard);
-router.put('/cards/:cardId/likes', auth, likeCard);
-router.delete('/cards/:cardId/likes', auth, dislikeCard);
+router.delete(
+  '/cards/:cardId',
+  auth,
+  celebrate({
+    params: Joi.object().keys({
+      _id: Joi.string().length(24).hex()
+    })
+  }),
+  deleteCard
+);
+router.put(
+  '/cards/:cardId/likes',
+  auth,
+  celebrate({
+    params: Joi.object().keys({
+      _id: Joi.string().length(24).hex()
+    }),
+    body: Joi.object().keys({
+      name: Joi.string().required().min(2).max(30),
+      // eslint-disable-next-line no-useless-escape
+      link: Joi.string().required().regex(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/),
+    })
+  }),
+  likeCard
+);
+router.delete(
+  '/cards/:cardId/likes',
+  auth,
+  celebrate({
+    params: Joi.object().keys({
+      _id: Joi.string().length(24).hex()
+    }),
+    body: Joi.object().keys({
+      name: Joi.string().required().min(2).max(30),
+      // eslint-disable-next-line no-useless-escape
+      link: Joi.string().required().regex(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/),
+    })
+  }),
+  dislikeCard
+);
 
 module.exports = router;

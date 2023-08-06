@@ -130,9 +130,10 @@ module.exports.createUser = (req, res) => {
 
 module.exports.getUsersMe = (req, res, next) => {
   const id = req.user._id;
-
-  return User.find({ id })
-    .then((user) => res.send({ data: user }))
+  return User.findById(id)
+    .then((user) => {
+      res.send({ data: user });
+    })
     // eslint-disable-next-line no-unused-vars
     .catch((err) => {
       throw new InternalServerError('Произошла ошибка.');

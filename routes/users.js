@@ -37,9 +37,27 @@ router.post('/signup', celebrate({
 }), createUser);
 
 router.get('/users', auth, getUsersAll);
-router.get('/users/:_id', auth, getUserId);
 router.get('/users/me', auth, getUsersMe);
-router.patch('/users/me', auth, updateUser);
+router.get(
+  '/users/:_id',
+  auth,
+  celebrate({
+    params: Joi.object().keys({
+      _id: Joi.string().length(24).hex()
+    })
+  }),
+  getUserId
+);
+router.patch(
+  '/users/me',
+  auth,
+  celebrate({
+    params: Joi.object().keys({
+      _id: Joi.string().length(24).hex()
+    })
+  }),
+  updateUser
+);
 router.patch('/users/me/avatar', auth, updateUserAvatar);
 
 module.exports = router;
