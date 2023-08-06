@@ -42,6 +42,9 @@ module.exports.createUser = (req, res, next) => {
       if (err.code === 11000 || err.statusCode === 409 || err.type === 'ConflictError') {
         throw new ConflictError('Пользователь с таким уже Email существует.');
       }
+      if (err.name === 'ValidationError') {
+        throw new ConflictError('Переданы некорректные данные пользователя.');
+      }
     })
     .catch(next);
   /* res.status(ERROR_CODE_400).send({
