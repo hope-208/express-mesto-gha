@@ -15,16 +15,14 @@ module.exports.createUser = (req, res, next) => {
   } = req.body;
 
   if (!email || !password) {
-    throw new BadRequestError({
-      message: 'Переданы некорректные почта или пароль.'
-    });
+    throw new BadRequestError('Переданы некорректные почта или пароль.');
   }
 
   return User.findOne({ email }).then((user) => {
     if (user) {
-      throw new ConflictError({ message: 'Пользователь с таким уже Email существует.' });
+      console.log(user);
+      throw new ConflictError('Пользователь с таким уже Email существует.');
     }
-
     return bcrypt.hash(req.body.password, 10)
       .then((hash) => User.create({
         email: req.body.email,
@@ -34,20 +32,25 @@ module.exports.createUser = (req, res, next) => {
         avatar: req.body.avatar,
       }));
   })
-    .then((user) => res.send(user))
+    .then((user) => res.send({
+      email: user.email,
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      _id: user._id
+    }))
     .catch((err) => {
-      if (err.code === 11000) {
-        throw new ConflictError({ message: 'Пользователь с таким уже Email существует.' });
-        /* res.status(ERROR_CODE_409).send({
-          message: 'Пользователь с таким уже Email существует.' });
-        */
+      if (err.code === 11000 || err.statusCode === 409 || err.type === 'ConflictError') {
+        throw new ConflictError('Пользователь с таким уже Email существует.');
+
       }
-      throw new BadRequestError({ message: 'Пользователь с таким уже Email существует.' });
-      /* res.status(ERROR_CODE_400).send({
-        message: 'Пользователь с таким уже Email существует.' });
-      */
     })
     .catch(next);
+  /* res.status(ERROR_CODE_400).send({
+        message: 'Пользователь с таким уже Email существует.' });
+
+    })
+    .catch(next); */
 };
 
 module.exports.login = (req, res, next) => {
@@ -55,14 +58,12 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      res.send({
-        token: jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' }),
-      });
-    })
-    // eslint-disable-next-line no-unused-vars
-    .catch((err) => {
-      throw new UnauthorizedError({ message: 'Неправильные почта или пароль.' });
-      // res.status(401).send({ message: 'Неправильные почта или пароль.' });
+      if (!email || !password) {
+        return next(new UnauthorizedError('Неправильные почта или пароль.'));
+      }
+
+      const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' });
+      return res.send({ token });
     })
     .catch(next);
 };
@@ -72,9 +73,7 @@ module.exports.getUsersAll = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     // eslint-disable-next-line no-unused-vars
     .catch((err) => {
-      throw new InternalServerError({
-        message: 'Произошла ошибка.',
-      });
+      throw new InternalServerError('Произошла ошибка.');
     })
     .catch(next);
   // res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' }));
@@ -94,16 +93,12 @@ module.exports.getUserId = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || (err.name === 'CastError' && err.path === '_id')) {
-        throw new BadRequestError({
-          message: 'Переданы некорректные данные пользователя.'
-        });
+        throw new BadRequestError('Переданы некорректные данные пользователя.');
         /* return res.status(ERROR_CODE_400).send({
           message: 'Переданы некорректные данные пользователя.' });
         */
       }
-      throw new InternalServerError({
-        message: 'Произошла ошибка.',
-      });
+      throw new InternalServerError('Произошла ошибка.');
     })
     /*
     .catch((err) => {
@@ -139,9 +134,7 @@ module.exports.getUsersMe = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     // eslint-disable-next-line no-unused-vars
     .catch((err) => {
-      throw new InternalServerError({
-        message: 'Произошла ошибка.',
-      });
+      throw new InternalServerError('Произошла ошибка.');
     })
     .catch(next);
   // res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' }));
@@ -154,9 +147,7 @@ module.exports.updateUser = (req, res, next) => {
   return User.findByIdAndUpdate(id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        throw new NotFoundError({
-          message: `Пользователь по указанному id ${id} не найден.`,
-        });
+        throw new NotFoundError(`Пользователь по указанному id ${id} не найден.`);
 
         /*
         return res.status(ERROR_CODE_404).send({
@@ -167,17 +158,13 @@ module.exports.updateUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError({
-          message: 'Переданы некорректные данные пользователя.'
-        });
+        throw new BadRequestError('Переданы некорректные данные пользователя.');
         /* return res.status(ERROR_CODE_400).send({
         message: 'Переданы некорректные данные пользователя.' });
        */
       }
 
-      throw new InternalServerError({
-        message: 'Произошла ошибка.',
-      });
+      throw new InternalServerError('Произошла ошибка.');
       // return res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' });
     })
     .catch(next);
@@ -190,9 +177,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
   return User.findByIdAndUpdate(id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        throw new NotFoundError({
-          message: `Пользователь по указанному id ${id} не найден.`,
-        });
+        throw new NotFoundError(`Пользователь по указанному id ${id} не найден.`);
         /*
         return res.status(ERROR_CODE_404).send({
           message: `Пользователь по указанному id ${id} не найден.`,
@@ -202,15 +187,13 @@ module.exports.updateUserAvatar = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError({ message: 'Переданы некорректные данные при обновлении аватара профиля.' });
+        throw new BadRequestError('Переданы некорректные данные при обновлении аватара профиля.');
         /* return res.status(ERROR_CODE_400).send({
           message: 'Переданы некорректные данные при обновлении аватара профиля.' });
         */
       }
 
-      throw new InternalServerError({
-        message: 'Произошла ошибка.',
-      });
+      throw new InternalServerError('Произошла ошибка.');
       // return res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' });
     })
     .catch(next);
