@@ -20,7 +20,6 @@ module.exports.createUser = (req, res, next) => {
 
   return User.findOne({ email }).then((user) => {
     if (user) {
-      console.log(user);
       throw new ConflictError('Пользователь с таким уже Email существует.');
     }
     return bcrypt.hash(req.body.password, 10)
@@ -42,7 +41,6 @@ module.exports.createUser = (req, res, next) => {
     .catch((err) => {
       if (err.code === 11000 || err.statusCode === 409 || err.type === 'ConflictError') {
         throw new ConflictError('Пользователь с таким уже Email существует.');
-
       }
     })
     .catch(next);
