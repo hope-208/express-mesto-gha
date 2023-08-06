@@ -99,6 +99,12 @@ module.exports.getUserId = (req, res, next) => {
           message: 'Переданы некорректные данные пользователя.' });
         */
       }
+      if (err.statusCode === 404) {
+        throw err;
+        /* return res.status(ERROR_CODE_404).send({
+          message: `Пользователь по указанному id ${id} не найден.`,
+        }); */
+      }
       throw new InternalServerError('Произошла ошибка.');
     })
     /*
