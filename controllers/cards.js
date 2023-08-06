@@ -51,21 +51,18 @@ module.exports.createCard = (req, res, next) => {
 module.exports.deleteCard = (req, res, next) => {
   const id = req.params.cardId;
   const myId = req.user._id;
+
   Card.findById(id)
     .then((card) => {
       if (!card) {
         throw new NotFoundError(`Карточка по указанному id ${id} не найдена.`);
-        /*
-        return res.status(ERROR_CODE_404).send({
-          message: `Карточка по указанному id ${id} не найдена.`,
-        }); */
       }
-      if (card.owner !== myId) {
+      if (card.owner.toString() !== myId) {
         throw new ForbiddenError('Карточка создана другим пользователем. У вас нет прав на её удаление.');
       }
-      // return Card.findByIdAndRemove(id)
-      Card.deleteOne(card);
-      return res.send({ data: card });
+      card.deleteOne()
+        .then(() => res.send({ data: card }))
+        .catch(next);
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || (err.name === 'CastError' && err.path === '_id')) {
@@ -75,7 +72,7 @@ module.exports.deleteCard = (req, res, next) => {
           message: `Передан некорректный id ${id} карточки.`,
         }); */
       }
-      if (err.statusCode === 403) {
+      if (err.statusCode === 403 || err.statusCode === 404) {
         throw err;
         /* return res.status(ERROR_CODE_404).send({
             message: `Пользователь по указанному id ${id} не найден.`,
