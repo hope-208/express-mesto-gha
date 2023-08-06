@@ -1,5 +1,3 @@
-// middlewares/auth.js
-
 // eslint-disable-next-line import/no-extraneous-dependencies
 const jwt = require('jsonwebtoken');
 
