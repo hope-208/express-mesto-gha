@@ -26,7 +26,7 @@ module.exports.createCard = (req, res) => Card.create({
 });
 */
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   return Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
@@ -35,13 +35,20 @@ module.exports.createCard = (req, res) => {
         throw new BadRequestError('Переданы некорректные данные при создании карточки.');
         /* return res.status(ERROR_CODE_400).send({
           message: 'Переданы некорректные данные при создании карточки.' }); */
-      }
+      };
+      if (err.statusCode === 404) {
+        throw err;
+        /* return res.status(ERROR_CODE_404).send({
+          message: `Пользователь по указанному id ${id} не найден.`,
+        }); */
+      };
       throw new InternalServerError('Произошла ошибка.');
       // return res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' });
-    });
+    })
+    .catch(next);
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   const id = req.params.cardId;
   const ownerId = req.user._id;
   const userCardId = req.params.owner;
@@ -70,16 +77,22 @@ module.exports.deleteCard = (req, res) => {
         return res.status(ERROR_CODE_400).send({
           message: `Передан некорректный id ${id} карточки.`,
         }); */
-        }
-
+        };
+        if (err.statusCode === 404) {
+          throw err;
+          /* return res.status(ERROR_CODE_404).send({
+            message: `Пользователь по указанному id ${id} не найден.`,
+          }); */
+        };
         throw new InternalServerError('Произошла ошибка.');
 
         // return res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' });
-      });
+      })
+      .catch(next);
   }
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   const id = req.params.cardId;
   return Card.findByIdAndUpdate(
     id,
@@ -100,18 +113,24 @@ module.exports.likeCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError' || (err.name === 'CastError' && err.path === '_id')) {
         throw new BadRequestError('Переданы некорректные данные для постановки лайка.');
-      }
+      };
       /* return res.status(ERROR_CODE_400).send({
           message: 'Переданы некорректные данные для постановки лайка.' });
       } */
-
+      if (err.statusCode === 404) {
+        throw err;
+        /* return res.status(ERROR_CODE_404).send({
+          message: `Пользователь по указанному id ${id} не найден.`,
+        }); */
+      };
       throw new InternalServerError('Произошла ошибка.');
 
       // return res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' });
-    });
+    })
+    .catch(next);
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   const id = req.params.cardId;
 
   if (!req.user._id) {
@@ -144,10 +163,16 @@ module.exports.dislikeCard = (req, res) => {
         /* return res.status(ERROR_CODE_400).send({
           message: 'Переданы некорректные данные для снятия лайка.' });
         */
-      }
-
+      };
+      if (err.statusCode === 404) {
+        throw err;
+        /* return res.status(ERROR_CODE_404).send({
+          message: `Пользователь по указанному id ${id} не найден.`,
+        }); */
+      };
       throw new InternalServerError('Произошла ошибка.');
 
       // return res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка.' });
-    });
+    })
+    .catch(next);
 };

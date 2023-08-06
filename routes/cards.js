@@ -23,7 +23,7 @@ router.post(
     body: Joi.object().keys({
       name: Joi.string().required().min(2).max(30),
       // eslint-disable-next-line no-useless-escape
-      link: Joi.string().required().regex(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/),
+      link: Joi.string().regex(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/),
     })
   }),
 
@@ -34,7 +34,7 @@ router.delete(
   auth,
   celebrate({
     params: Joi.object().keys({
-      _id: Joi.string().length(24).hex()
+      cardId: Joi.string().length(24).hex()
     })
   }),
   deleteCard
@@ -44,12 +44,7 @@ router.put(
   auth,
   celebrate({
     params: Joi.object().keys({
-      _id: Joi.string().length(24).hex()
-    }),
-    body: Joi.object().keys({
-      name: Joi.string().required().min(2).max(30),
-      // eslint-disable-next-line no-useless-escape
-      link: Joi.string().required().regex(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/),
+      cardId: Joi.string().length(24).hex()
     })
   }),
   likeCard
@@ -59,12 +54,7 @@ router.delete(
   auth,
   celebrate({
     params: Joi.object().keys({
-      _id: Joi.string().length(24).hex()
-    }),
-    body: Joi.object().keys({
-      name: Joi.string().required().min(2).max(30),
-      // eslint-disable-next-line no-useless-escape
-      link: Joi.string().required().regex(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/),
+      cardId: Joi.string().length(24).hex()
     })
   }),
   dislikeCard
