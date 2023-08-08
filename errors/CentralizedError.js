@@ -6,4 +6,4 @@ const CentralizedError = (err, req, res, next) => {
   res.status(errStatus).send({ errMessage: errStatus === 500 ? 'На сервере произошла ошибка' : errMessage });
 };
 
-module.exports = CentralizedError();
+module.exports = { CentralizedError };

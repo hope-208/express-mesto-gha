@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 
 const { errors } = require('celebrate');
 
+const { CentralizedError } = require('./errors/CentralizedError');
+
 const { PORT = 3000 } = process.env;
 
 const app = require('./routes/index');
@@ -17,9 +19,6 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
 
 app.use(errors());
 
-const { CentralizedError } = require('./errors/CentralizedError');
-
-// eslint-disable-next-line no-undef
-app.use(CentralizedError(err, req, res, next));
+app.use(CentralizedError);
 
 app.listen(PORT);
