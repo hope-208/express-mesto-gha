@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const isEmail = require('validator/lib/isEmail');
 const UnauthorizedError = require('../errors/UnauthorizedError');
+const { REGEX_URL } = require('../utils/constants');
 
 mongoose.set('runValidators', true);
 
@@ -35,8 +36,12 @@ const userSchema = new mongoose.Schema(
       default: 'Исследователь'
     },
     avatar: {
-      type: mongoose.Schema.Types.Url,
-      default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png'
+      type: String,
+      default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+      validate: {
+        validator: (v) => REGEX_URL.test(v),
+        message: 'Неправильный формат URL',
+      },
     },
   },
   { versionKey: false }
