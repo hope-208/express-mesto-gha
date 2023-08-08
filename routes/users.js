@@ -1,7 +1,8 @@
 const router = require('express').Router();
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 const { celebrate, Joi } = require('celebrate');
+
+const { REGEX_URL } = require('../utils/constants');
 
 const {
   login,
@@ -31,8 +32,7 @@ router.post('/signup', celebrate({
     password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    // eslint-disable-next-line no-useless-escape
-    avatar: Joi.string().regex(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/),
+    avatar: Joi.string().regex(REGEX_URL),
   })
 }), createUser);
 
@@ -43,7 +43,7 @@ router.get(
   auth,
   celebrate({
     params: Joi.object().keys({
-      _id: Joi.string().length(24).hex()
+      _id: Joi.string().required().length(24).hex()
     })
   }),
   getUserId
@@ -52,12 +52,10 @@ router.patch(
   '/users/me',
   auth,
   celebrate({
-    params: Joi.object().keys({
-      _id: Joi.string().length(24).hex()
-    }),
     body: Joi.object().keys({
-      name: Joi.string().min(2).max(30),
-      about: Joi.string().min(2).max(30)
+      _id: Joi.string().required().length(24).hex(),
+      name: Joi.string().required().min(2).max(30),
+      about: Joi.string().required().min(2).max(30)
     })
   }),
   updateUser
@@ -66,12 +64,9 @@ router.patch(
   '/users/me/avatar',
   auth,
   celebrate({
-    params: Joi.object().keys({
-      _id: Joi.string().length(24).hex()
-    }),
     body: Joi.object().keys({
-    // eslint-disable-next-line no-useless-escape
-      avatar: Joi.string().regex(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/),
+      _id: Joi.string().required().length(24).hex(),
+      avatar: Joi.string().required().regex(REGEX_URL),
     })
   }),
   updateUserAvatar

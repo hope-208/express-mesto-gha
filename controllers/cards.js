@@ -1,16 +1,11 @@
 const Card = require('../models/card');
 const BadRequestError = require('../errors/BadRequestError');
-const InternalServerError = require('../errors/InternalServerError');
 const NotFoundError = require('../errors/NotFoundError');
 const ForbiddenError = require('../errors/ForbiddenError');
 
 module.exports.getCardsAll = (req, res, next) => {
   Card.find({})
     .then((card) => res.send({ data: card }))
-    // eslint-disable-next-line no-unused-vars
-    .catch((err) => {
-      throw new InternalServerError('Произошла ошибка.');
-    })
     .catch(next);
 };
 
@@ -22,10 +17,6 @@ module.exports.createCard = (req, res, next) => {
       if (err.name === 'ValidationError') {
         throw new BadRequestError('Переданы некорректные данные при создании карточки.');
       }
-      if (err.statusCode === 404) {
-        throw err;
-      }
-      throw new InternalServerError('Произошла ошибка.');
     })
     .catch(next);
 };
@@ -53,7 +44,6 @@ module.exports.deleteCard = (req, res, next) => {
       if (err.statusCode === 403 || err.statusCode === 404) {
         throw err;
       }
-      throw new InternalServerError('Произошла ошибка.');
     })
     .catch(next);
 };
@@ -63,8 +53,7 @@ module.exports.likeCard = (req, res, next) => {
   return Card.findByIdAndUpdate(
     id,
     { $addToSet: { likes: req.user._id } },
-    // eslint-disable-next-line comma-dangle
-    { new: true, runValidators: true }
+    { new: true }
   )
     .then((card) => {
       if (!card) {
@@ -73,13 +62,12 @@ module.exports.likeCard = (req, res, next) => {
       return res.send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || (err.name === 'CastError' && err.path === '_id')) {
+      if (err.name === 'CastError' && err.path === '_id') {
         throw new BadRequestError('Переданы некорректные данные для постановки лайка.');
       }
       if (err.statusCode === 404) {
         throw err;
       }
-      throw new InternalServerError('Произошла ошибка.');
     })
     .catch(next);
 };
@@ -103,13 +91,12 @@ module.exports.dislikeCard = (req, res, next) => {
       return res.send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || (err.name === 'CastError' && err.path === '_id')) {
+      if (err.name === 'CastError' && err.path === '_id') {
         throw new BadRequestError('Переданы некорректные данные для снятия лайка.');
       }
       if (err.statusCode === 404) {
         throw err;
       }
-      throw new InternalServerError('Произошла ошибка.');
     })
     .catch(next);
 };
