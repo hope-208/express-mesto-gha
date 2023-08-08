@@ -38,9 +38,9 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
-    .then(({ _id: userId }) => {
-      if (userId) {
-        const token = jwt.sign({ userId }, 'super-strong-secret', { expiresIn: '7d' });
+    .then((user) => {
+      if (user) {
+        const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' });
         return res.send({ token });
       }
       return next(new UnauthorizedError('Неправильные почта или пароль.'));
