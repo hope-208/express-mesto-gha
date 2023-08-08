@@ -11,7 +11,7 @@ const cardSchema = new mongoose.Schema(
       maxlength: 30
     },
     link: {
-      type: mongoose.SchemaTypes.Url,
+      type: mongoose.Schema.Types.Url,
       required: true,
     },
     owner: {
