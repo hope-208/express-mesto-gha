@@ -38,9 +38,9 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
-    .then((user) => {
-      if (user) {
-        const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' });
+    .then(({ _id: userId }) => {
+      if (userId) {
+        const token = jwt.sign({ userId }, 'super-strong-secret', { expiresIn: '7d' });
         return res.send({ token });
       }
       return next(new UnauthorizedError('Неправильные почта или пароль.'));
@@ -64,11 +64,6 @@ module.exports.getUserId = (req, res, next) => {
       if (err.name === 'ValidationError' || (err.name === 'CastError' && err.path === '_id')) {
         throw new BadRequestError('Переданы некорректные данные пользователя.');
       }
-      /*
-      if (err.statusCode === 404) {
-        throw err;
-      }
-      */
       next();
     });
 };
