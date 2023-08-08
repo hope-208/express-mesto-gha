@@ -1,9 +1,8 @@
 // eslint-disable-next-line no-unused-vars
 const CentralizedError = (err, req, res, next) => {
-  const errStatus = err.statusCode || 500;
-  const errMessage = err.message;
+  const { statusCode = 500, message } = err;
 
-  res.status(errStatus).send({ errMessage: errStatus === 500 ? 'На сервере произошла ошибка' : errMessage });
+  res.status(statusCode).send({ message: statusCode === 500 ? 'На сервере произошла ошибка' : message });
 };
 
 module.exports = { CentralizedError };
