@@ -63,7 +63,7 @@ module.exports.likeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        return new NotFoundError(`Передан несуществующий id ${id} карточки.`);
+        return next(new NotFoundError(`Передан несуществующий id ${id} карточки.`));
       }
       return res.send({ data: card });
     })
@@ -93,7 +93,7 @@ module.exports.dislikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        return new NotFoundError(`Передан несуществующий id ${id} карточки.`);
+        return next(new NotFoundError(`Передан несуществующий id ${id} карточки.`));
       }
       return res.send({ data: card });
     })
