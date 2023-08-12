@@ -53,7 +53,6 @@ router.patch(
   auth,
   celebrate({
     body: Joi.object().keys({
-      _id: Joi.string().required().length(24).hex(),
       name: Joi.string().required().min(2).max(30),
       about: Joi.string().required().min(2).max(30)
     })
@@ -65,7 +64,6 @@ router.patch(
   auth,
   celebrate({
     body: Joi.object().keys({
-      _id: Joi.string().required().length(24).hex(),
       avatar: Joi.string().required().regex(REGEX_URL),
     })
   }),
