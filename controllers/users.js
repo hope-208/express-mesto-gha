@@ -44,7 +44,8 @@ module.exports.login = (req, res, next) => {
         return res.send({ token });
       }
       return next(new UnauthorizedError('Неправильные почта или пароль.'));
-    });
+    })
+    .catch(next);
 };
 
 module.exports.getUsersAll = (req, res, next) => {
