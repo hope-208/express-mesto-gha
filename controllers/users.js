@@ -62,7 +62,7 @@ module.exports.getUserId = (req, res, next) => {
       throw new NotFoundError(`Пользователь по указанному id ${id} не найден.`);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || (err.name === 'CastError' && err.path === '_id')) {
+      if (err.name === 'CastError') {
         throw new BadRequestError('Переданы некорректные данные пользователя.');
       }
       next();
