@@ -1,5 +1,4 @@
 const Card = require('../models/card');
-// const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 const ForbiddenError = require('../errors/ForbiddenError');
 const ValidationError = require('../errors/ValidationError');
@@ -16,10 +15,6 @@ module.exports.createCard = (req, res, next) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       ValidationError(err, next);
-
-      /* if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
-      } */
     });
 };
 
@@ -41,16 +36,6 @@ module.exports.deleteCard = (req, res, next) => {
     })
     .catch((err) => {
       ValidationError(err, next);
-      /*
-
-      if (err.name === 'CastError') {
-        throw new BadRequestError(`Передан некорректный id ${id} карточки.`);
-      }
-      */
-      /*
-      if (err.statusCode === 403 || err.statusCode === 404) {
-        throw err;
-      } next(); */
     });
 };
 
@@ -69,14 +54,6 @@ module.exports.likeCard = (req, res, next) => {
     })
     .catch((err) => {
       ValidationError(err, next);
-      /*
-      if (err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные для постановки лайка.');
-      }
-      if (err.statusCode === 404) {
-        throw err;
-      }
-      next(); */
     });
 };
 
@@ -99,13 +76,5 @@ module.exports.dislikeCard = (req, res, next) => {
     })
     .catch((err) => {
       ValidationError(err, next);
-      /*
-      if (err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные для снятия лайка.');
-      }
-      if (err.statusCode === 404) {
-        throw err;
-      }
-      */
     });
 };

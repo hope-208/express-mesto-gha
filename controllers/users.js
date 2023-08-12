@@ -1,8 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-// const BadRequestError = require('../errors/BadRequestError');
-// const ConflictError = require('../errors/ConflictError');
 const NotFoundError = require('../errors/NotFoundError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 const ValidationError = require('../errors/ValidationError');
@@ -25,16 +23,6 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((err) => {
       ValidationError(err, next);
-      /*
-      if (err.code === 11000) {
-        return next(new ConflictError('Пользователь с таким уже Email существует.'));
-      }
-      if (err.name === 'ValidationError') {
-        return next(new BadRequestError('Переданы некорректные данные пользователя.'));
-      }
-      return next();
-      // добавить другие ошибки
-      */
     });
 };
 
@@ -67,12 +55,6 @@ module.exports.getUserId = (req, res, next) => {
     })
     .catch((err) => {
       ValidationError(err, next);
-      /*
-      if (err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные пользователя.');
-      }
-      next();
-      */
     });
 };
 
@@ -96,11 +78,6 @@ module.exports.updateUser = (req, res, next) => {
     })
     .catch((err) => {
       ValidationError(err, next);
-      /*
-      if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные пользователя.'));
-      }
-      next(); */
     });
 };
 
@@ -115,11 +92,5 @@ module.exports.updateUserAvatar = (req, res, next) => {
     })
     .catch((err) => {
       ValidationError(err, next);
-      /*
-      if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные пользователя.'));
-      }
-      next();
-      */
     });
 };
