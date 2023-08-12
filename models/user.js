@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const isEmail = require('validator/lib/isEmail');
 const UnauthorizedError = require('../errors/UnauthorizedError');
+const { REGEX_URL } = require('../utils/constants');
 
 mongoose.set('runValidators', true);
 
@@ -36,14 +37,17 @@ const userSchema = new mongoose.Schema(
     },
     avatar: {
       type: String,
-      default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png'
+      default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+      validate: {
+        validator: (v) => REGEX_URL.test(v),
+        message: 'Неправильный формат URL',
+      },
     },
   },
   { versionKey: false }
 );
 
-// eslint-disable-next-line func-names
-userSchema.statics.findUserByCredentials = function (email, password) {
+userSchema.statics.findUserByCredentials = function validUserSchema(email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
@@ -53,7 +57,7 @@ userSchema.statics.findUserByCredentials = function (email, password) {
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            throw new UnauthorizedError({ message: 'Неправильные почта или пароль.' });
+            throw new UnauthorizedError('Неправильные почта или пароль.');
           }
 
           return user;
