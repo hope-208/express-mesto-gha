@@ -30,12 +30,12 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findById(id)
     .then((card) => {
       if (!card) {
-        next(new NotFoundError(`Карточка по указанному id ${id} не найдена.`));
+        return next(new NotFoundError(`Карточка по указанному id ${id} не найдена.`));
       }
       if (card.owner.toString() !== myId) {
-        next(new ForbiddenError('Карточка создана другим пользователем. У вас нет прав на её удаление.'));
+        return next(new ForbiddenError('Карточка создана другим пользователем. У вас нет прав на её удаление.'));
       }
-      card.deleteOne()
+      return card.deleteOne()
         .then(() => res.send({ data: card }))
         .catch(next);
     })
@@ -63,7 +63,7 @@ module.exports.likeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError(`Передан несуществующий id ${id} карточки.`);
+        return new NotFoundError(`Передан несуществующий id ${id} карточки.`);
       }
       return res.send({ data: card });
     })
@@ -84,7 +84,7 @@ module.exports.dislikeCard = (req, res, next) => {
   const id = req.params.cardId;
 
   if (!req.user._id) {
-    throw new NotFoundError('Переданы некорректные данные для снятия лайка.');
+    return new NotFoundError('Переданы некорректные данные для снятия лайка.');
   }
   return Card.findByIdAndUpdate(
     id,
@@ -93,7 +93,7 @@ module.exports.dislikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError(`Передан несуществующий id ${id} карточки.`);
+        return new NotFoundError(`Передан несуществующий id ${id} карточки.`);
       }
       return res.send({ data: card });
     })
