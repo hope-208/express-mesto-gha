@@ -59,10 +59,11 @@ module.exports.likeCard = (req, res, next) => {
 
 module.exports.dislikeCard = (req, res, next) => {
   const id = req.params.cardId;
-
+  /*
   if (!req.user._id) {
     return new NotFoundError('Переданы некорректные данные для снятия лайка.');
   }
+  */
   return Card.findByIdAndUpdate(
     id,
     { $pull: { likes: req.user._id } },
