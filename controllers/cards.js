@@ -11,6 +11,7 @@ module.exports.getCardsAll = (req, res, next) => {
 
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
+
   return Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
@@ -22,7 +23,7 @@ module.exports.deleteCard = (req, res, next) => {
   const id = req.params.cardId;
   const myId = req.user._id;
 
-  Card.findById(id)
+  return Card.findById(id)
     .then((card) => {
       if (!card) {
         return next(new NotFoundError(`Карточка по указанному id ${id} не найдена.`));
@@ -41,6 +42,7 @@ module.exports.deleteCard = (req, res, next) => {
 
 module.exports.likeCard = (req, res, next) => {
   const id = req.params.cardId;
+
   return Card.findByIdAndUpdate(
     id,
     { $addToSet: { likes: req.user._id } },
@@ -60,9 +62,6 @@ module.exports.likeCard = (req, res, next) => {
 module.exports.dislikeCard = (req, res, next) => {
   const id = req.params.cardId;
 
-  if (!req.user._id) {
-    return new NotFoundError('Переданы некорректные данные для снятия лайка.');
-  }
   return Card.findByIdAndUpdate(
     id,
     { $pull: { likes: req.user._id } },

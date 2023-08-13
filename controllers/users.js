@@ -2,7 +2,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
-const UnauthorizedError = require('../errors/UnauthorizedError');
 const ValidationError = require('../errors/ValidationError');
 
 module.exports.createUser = (req, res, next) => {
@@ -31,9 +30,6 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        next(new UnauthorizedError('Неправильные почта или пароль.'));
-      }
       const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' });
       return res.send({ token });
     })
@@ -48,6 +44,7 @@ module.exports.getUsersAll = (req, res, next) => {
 
 module.exports.getUserId = (req, res, next) => {
   const id = req.params._id;
+
   return User.findById(id)
     .then((user) => {
       if (user) { return res.send({ data: user }); }
@@ -60,6 +57,7 @@ module.exports.getUserId = (req, res, next) => {
 
 module.exports.getUsersMe = (req, res, next) => {
   const id = req.user._id;
+
   return User.findById(id)
     .then((user) => {
       res.send({ data: user });
